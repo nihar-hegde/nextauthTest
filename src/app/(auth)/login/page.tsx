@@ -1,8 +1,17 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
 export default function Login() {
+  const [authState, setAuthState] = useState({
+    email: "",
+    password: "",
+  });
+  const submitForm = () => {
+    console.log("the auth statte is : ", authState);
+  };
   return (
     <section>
       <div className="grid grid-cols-1 lg:grid-cols-2 h-screen">
@@ -135,6 +144,9 @@ export default function Login() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="email"
                       placeholder="Email"
+                      onChange={(e) =>
+                        setAuthState({ ...authState, email: e.target.value })
+                      }
                     ></input>
                   </div>
                 </div>
@@ -153,6 +165,9 @@ export default function Login() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="password"
                       placeholder="Password"
+                      onChange={(e) =>
+                        setAuthState({ ...authState, password: e.target.value })
+                      }
                     ></input>
                   </div>
                 </div>
@@ -160,8 +175,9 @@ export default function Login() {
                   <button
                     type="button"
                     className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+                    onClick={submitForm}
                   >
-                    Get started
+                    Login
                   </button>
                 </div>
               </div>
