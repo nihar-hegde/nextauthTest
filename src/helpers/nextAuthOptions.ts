@@ -8,6 +8,22 @@ export const authOptions: AuthOptions = {
   pages:{
     signIn:"/login"
   },
+  callbacks:{
+    async signIn({user,account,profile,email,credentials}){
+      try {
+        connectToDb();
+      const findUser = await User.findOne({email:user.email});
+      if(findUser){
+        return true;
+      }
+      await User.create({name:user.name,email:user.email});
+      return true;
+      } catch (error) {
+       console.log("Sign in error") 
+       return false;
+      }
+    }
+  },
   providers: [
     CredentialsProvider({
       name: "Next Auth",
