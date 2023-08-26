@@ -5,7 +5,7 @@ import vine, { errors } from "@vinejs/vine";
 import ErrorReporter from "@/validator/ErrorReporter";
 import bcrypt from "bcryptjs";
 import { User } from "@/model/User";
-import { inflate } from "zlib";
+
 
 connectToDb();
 
