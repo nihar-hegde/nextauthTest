@@ -24,7 +24,11 @@ export async function POST(request:NextRequest){
             if(checkPassword){
                 return NextResponse.json({status:200,message:"user logged in"},{status:200})
             }
-            return NextResponse.json({status:400,message:"Please check your credentials"},{status:200})
+            return NextResponse.json({status:400,
+            errors:{
+                email:"Please check your credentials"
+            }
+            },{status:200})
 
         }
 

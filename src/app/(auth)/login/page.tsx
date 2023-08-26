@@ -3,14 +3,40 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
+  const params = useSearchParams();
   const [authState, setAuthState] = useState({
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<loginErrorType>({});
   const submitForm = () => {
-    console.log("the auth statte is : ", authState);
+    console.log("the auth state is : ", authState);
+    axios
+      .post("/api/auth/login", authState)
+      .then((res) => {
+        setLoading(false);
+        const response = res.data;
+        if (response.status === 200) {
+          signIn("credentials", {
+            email: authState.email,
+            password: authState.password,
+            callbackUrl: "/",
+            redirect: true,
+          });
+        } else if (response?.status === 400) {
+          setErrors(response?.errors);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Something went wrong");
+      });
   };
   return (
     <section>
@@ -129,6 +155,13 @@ export default function Login() {
                 Create a free account
               </Link>
             </p>
+            {params.get("message") ? (
+              <p className="bg-green-400 font-bold rounded-md p-4">
+                {params.get("message")}
+              </p>
+            ) : (
+              <></>
+            )}
             <form action="#" method="POST" className="mt-8">
               <div className="space-y-5">
                 <div>
@@ -148,6 +181,9 @@ export default function Login() {
                         setAuthState({ ...authState, email: e.target.value })
                       }
                     ></input>
+                    <span className="text-red-500 font-bold">
+                      {errors?.email}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -169,15 +205,21 @@ export default function Login() {
                         setAuthState({ ...authState, password: e.target.value })
                       }
                     ></input>
+
+                    <span className="text-red-500 font-bold">
+                      {errors?.password}
+                    </span>
                   </div>
                 </div>
                 <div>
                   <button
                     type="button"
-                    className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+                    className={`inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80
+                    ${loading ? "bg-gray-500" : "bg-black-"}
+                    `}
                     onClick={submitForm}
                   >
-                    Login
+                    {loading ? "Processing..." : "Login"}
                   </button>
                 </div>
               </div>

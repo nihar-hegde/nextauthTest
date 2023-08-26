@@ -2,16 +2,37 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const router = useRouter();
   const [authState, setAuthState] = useState({
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
   });
-  const submitForm = () => {
-    console.log("the auth statte is : ", authState);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<registerErrorType>({});
+  const submitForm = async () => {
+    setLoading(true);
+    console.log("The auth state is : ", authState);
+    axios
+      .post("/api/auth/register", authState)
+      .then((res) => {
+        setLoading(false);
+        const response = res.data;
+        if (response.status === 200) {
+          router.push(`/login?message=${response.message}`);
+        } else if (response?.status === 400) {
+          setErrors(response?.errors);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Something went wrong");
+      });
   };
   return (
     <section>
@@ -149,6 +170,9 @@ export default function Register() {
                         setAuthState({ ...authState, name: e.target.value })
                       }
                     ></input>
+                    <span className="text-red-500 font-bold">
+                      {errors?.name}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -168,6 +192,9 @@ export default function Register() {
                         setAuthState({ ...authState, email: e.target.value })
                       }
                     ></input>
+                    <span className="text-red-500 font-bold">
+                      {errors?.email}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -189,6 +216,9 @@ export default function Register() {
                         setAuthState({ ...authState, password: e.target.value })
                       }
                     ></input>
+                    <span className="text-red-500 font-bold">
+                      {errors?.password}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -218,10 +248,12 @@ export default function Register() {
                 <div>
                   <button
                     type="button"
-                    className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+                    className={`inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80
+                    ${loading ? "bg-gray" : "bg-black"}
+                    `}
                     onClick={submitForm}
                   >
-                    Register
+                    {loading ? "Processing..." : "Register"}
                   </button>
                 </div>
               </div>
